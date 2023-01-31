@@ -41,15 +41,19 @@ namespace ARKBreedingStats.uiControls
             var minFoodRate = species.taming.foodConsumptionBase * dinoFoodDrainMultiplier * tamedDinoFoodDrainMultiplier;
             // max food rate at maturation 0 %
             var maxFoodRate = minFoodRate * species.taming.babyFoodConsumptionMult * babyFoodConsumptionSpeedMultiplier;
+
             var foodRateDecay = minFoodRate - maxFoodRate;
 
             // to get the current food rate for a maturation value: maxFoodRate + maturation * foodRateDecay
             var foodRateStart = maxFoodRate + fromMaturation * foodRateDecay;
             var foodRateEnd = maxFoodRate + untilMaturation * foodRateDecay;
 
-            // calculate area of rectangle and triangle on top to get the total food needed
-            totalFood = species.breeding.maturationTimeAdjusted * ((untilMaturation - fromMaturation) * (foodRateEnd + 0.5 * Math.Abs(foodRateStart - foodRateEnd)));
-
+            // the sum over a period is time * average rate.  because the chage from min to max is linear, we can say:
+            var duration = species.breeding.maturationTimeAdjusted * (untilMaturation - fromMaturation);
+            var averateRate = (foodRateStart + foodRateEnd) * 0.5;
+            
+            totalFood = duration * averateRate;
+            
             return true;
         }
     }
